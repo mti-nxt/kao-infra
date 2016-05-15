@@ -1,0 +1,17 @@
+{
+  "name": "kao-classify",
+  "version": "1.0.0",
+  "description": "CFN template for Kao classify",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "NewGyu@kinoboku.net",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "aws-sdk": "^2.3.11",
+    "cloudformation-z": "*",
+    "config": "^1.17.1"
+  }
+}
