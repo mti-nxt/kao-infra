@@ -95,7 +95,6 @@ module.exports = {
       }
     },
 
-
     "ElasticLoadBalancer": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
@@ -131,6 +130,22 @@ module.exports = {
       "Properties": {
         "BucketName": `kao-class-${config.tags.Stage.toLowerCase()}`,
       },
+    },
+
+    "EcsServiceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [{
+            "Effect": "Allow",
+            "Principal": { "Service": ["ecs.amazonaws.com"] },
+            "Action": ["sts:AssumeRole"]
+          }]
+        },
+        "ManagedPolicyArns": [
+          "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
+        ],
+      }
     },
   },
 
