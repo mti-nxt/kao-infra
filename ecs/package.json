@@ -1,0 +1,17 @@
+{
+  "name": "ecs-sample",
+  "version": "1.0.0",
+  "description": "Sample for Amazon ECS.Task Definition and Service...",
+  "engine": ">=4.2.6",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "author": "NewGyu@kinoboku.net",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "config": "^1.17.1",
+    "aws-ecs-z": "*"
+  }
+}
