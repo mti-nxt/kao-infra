@@ -28,7 +28,7 @@ module.exports = {
         "ImageId": { "Fn::FindInMap": ["Region2EcsAMI", { "Ref": "AWS::Region" }, "AMIID"] },
         "InstanceType": config.EcsCluster.instance.type,
         "SecurityGroups": [{ "Ref": "InstanceSecurityGroup" }],
-        "KeyName": config.EcsCluster.keyPair,
+        "KeyName": config.EcsCluster.instance.keyPair,
         "IamInstanceProfile": { "Ref": "EcsInstanceProfile" },
         "UserData": Util.toFnBase64(fs.readFileSync(__dirname + "/userData/ecsInstance.sh", "utf-8")),
         "SpotPrice": 0.05
@@ -44,7 +44,7 @@ module.exports = {
         "DesiredCapacity": config.EcsCluster.desired,
         "VPCZoneIdentifier": config.subnets,
         "Tags": [
-          { "Key": "Name", "Value": config.prefix + "-ECS", PropagateAtLaunch: true }
+          { "Key": "Name", "Value": `${config.tags.SystemName}-${config.tags.Stage}-ECS`, PropagateAtLaunch: true }
         ]
       }
     },
