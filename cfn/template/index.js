@@ -86,20 +86,29 @@ module.exports = {
       "Properties": {
         "GroupDescription": "Enable SSH access via port 22",
         "VpcId": config.vpcId,
-        "SecurityGroupIngress": [{
-          "IpProtocol": "tcp",
-          "FromPort": "22",
-          "ToPort": "22",
-          "CidrIp": "0.0.0.0/0"
-        }]
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "22",
+            "ToPort": "22",
+            "CidrIp": "0.0.0.0/0"
+          },
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "8080",
+            "ToPort": "8080",
+            "SourceSecurityGroupId": { "Ref": "ElbSecurityGroup" }
+          }
+        ]
       }
     },
 
     "ElasticLoadBalancer": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
-        "AvailabilityZones": { "Fn::GetAZs": "" },
         "CrossZone": "true",
+        "Subnets": config.subnets,
+        "SecurityGroups": [{ "Ref": "ElbSecurityGroup" }],
         "Listeners": [{
           "LoadBalancerPort": "80",
           "InstancePort": "8080",
@@ -112,6 +121,20 @@ module.exports = {
           "Interval": "30",
           "Timeout": "5"
         }
+      }
+    },
+    //ELBのセキュリティグループ
+    "ElbSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "for Cluster ELB",
+        "VpcId": config.vpcId,
+        "SecurityGroupIngress": [{
+          "IpProtocol": "tcp",
+          "FromPort": "80",
+          "ToPort": "80",
+          "CidrIp": "0.0.0.0/0"
+        }]
       }
     },
 
