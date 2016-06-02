@@ -5,19 +5,12 @@ var Util = require("cloudformation-z").Util;
 module.exports = {
   "AWSTemplateFormatVersion": "2010-09-09",
 
-  "Description": "cloudformation template sample",
+  "Description": "kao-api infra",
 
   "Parameters": {},
   "Mappings": require("./mappings.js"),
 
   "Resources": {
-    /*
-     * ECSクラスター
-     */
-    "KaoCluster": {
-      "Type": "AWS::ECS::Cluster"
-    },
-
     /**
      * ECSクラスターに属するインスタンス用のASG
      */
@@ -28,9 +21,10 @@ module.exports = {
         "ImageId": { "Fn::FindInMap": ["Region2EcsAMI", { "Ref": "AWS::Region" }, "AMIID"] },
         "InstanceType": config.EcsCluster.instance.type,
         "SecurityGroups": [{ "Ref": "InstanceSecurityGroup" }],
+        "AssociatePublicIpAddress": true,
         "KeyName": config.EcsCluster.instance.keyPair,
         "IamInstanceProfile": { "Ref": "EcsInstanceProfile" },
-        "UserData": Util.toFnBase64(fs.readFileSync(__dirname + "/userData/ecsInstance.sh", "utf-8")),
+        "UserData": Util.toFnBase64(fs.readFileSync(`${__dirname}/userData/init.sh`, "utf-8")),
         "SpotPrice": 0.05
       }
     },
@@ -39,12 +33,15 @@ module.exports = {
       "Properties": {
         "AvailabilityZones": { "Fn::GetAZs": "" },
         "LaunchConfigurationName": { "Ref": "ClusterConfig" },
+        "LoadBalancerNames": [
+          { "Ref": "LB" }
+        ],
         "MinSize": config.EcsCluster.min,
         "MaxSize": config.EcsCluster.max,
         "DesiredCapacity": config.EcsCluster.desired,
         "VPCZoneIdentifier": config.subnets,
         "Tags": [
-          { "Key": "Name", "Value": `${config.tags.SystemName}-${config.tags.Stage}-ECS`, PropagateAtLaunch: true }
+          { "Key": "Name", "Value": `${config.tags.SystemName}-${config.tags.Stage}`, PropagateAtLaunch: true }
         ]
       }
     },
@@ -66,18 +63,33 @@ module.exports = {
             "Action": ["sts:AssumeRole"]
           }]
         },
+        /*
         "ManagedPolicyArns": [
           "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
         ],
-        /*
+        */
         "Policies": [{
-          "PolicyName": "EcsInstanceRole-policy",
+          "PolicyName": "Logging",
           "PolicyDocument": {
             "Statement": [
-            ]
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "logs:CreateLogStream",
+                  "logs:PutLogEvents"
+                ],
+                "Resource": "*"
+              },
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "s3:*",
+                ],
+                "Resource": "arn:aws:s3:::kao-class-dev"
+              }
+            ],
           }
         }],
-        */
       }
     },
     //各インスタンスのセキュリティグループ
@@ -103,7 +115,7 @@ module.exports = {
       }
     },
 
-    "ElasticLoadBalancer": {
+    "LB": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
         "CrossZone": "true",
@@ -115,7 +127,7 @@ module.exports = {
           "Protocol": "HTTP"
         }],
         "HealthCheck": {
-          "Target": "HTTP:8080/api/swagger.json",
+          "Target": "HTTP:8080/healthcheck",
           "HealthyThreshold": "3",
           "UnhealthyThreshold": "5",
           "Interval": "30",
@@ -153,22 +165,6 @@ module.exports = {
       "Properties": {
         "BucketName": `kao-class-${config.tags.Stage.toLowerCase()}`,
       },
-    },
-
-    "EcsServiceRole": {
-      "Type": "AWS::IAM::Role",
-      "Properties": {
-        "AssumeRolePolicyDocument": {
-          "Statement": [{
-            "Effect": "Allow",
-            "Principal": { "Service": ["ecs.amazonaws.com"] },
-            "Action": ["sts:AssumeRole"]
-          }]
-        },
-        "ManagedPolicyArns": [
-          "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceRole"
-        ],
-      }
     },
   },
 
