@@ -19,4 +19,4 @@ sudo -u ec2-user git clone https://github.com/mti-nxt/kao-api.git /opt/kao/api
 sudo -u ec2-user aws s3 cp s3://kao-class-dev/kao-api /opt/kao/data --recursive
 
 #start kao-api
-docker run -d --restart=always -p 8080:8080 --log-driver=awslogs --log-opt awslogs-region=ap-northeast-1 --log-opt awslogs-group={"Ref": "KaoApiLog"} mtinx/kao-api
+docker run -d --restart=always -p 8080:8080 --log-driver=awslogs --log-opt awslogs-region=ap-northeast-1 --log-opt awslogs-group={"Ref": "KaoApiLog"} mtinx/kao-api:research
