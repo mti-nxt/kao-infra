@@ -7,15 +7,33 @@ module.exports = {
   "containerDefinitions": [
     {
       "name": "kao-api",
-      "image": `745130816530.dkr.ecr.us-east-1.amazonaws.com/kao-api:${config.app.api.imageTag}`,
-      "cpu": 300,
+      "image": `mtinx/kao-api:${config.app.api.imageTag}`,
+      "cpu": 500,
       "memory": 1024,
       "portMappings": [
-        {"hostPort":8080, "containerPort":8080}
       ],
       "volumesFrom": [],
       "environment": [
         { "name": "NODE_ENV", "value": process.env.NODE_ENV }
+      ],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-region": config.awsOpts.region,
+          "awslogs-group": config.app.api.logGroup
+        }
+      },
+    },
+    {
+      name: "kao-nginx",
+      image: "mtinx/kao-api-nginx",
+      cpu: 300,
+      memory: 512,
+      "portMappings": [
+        {"hostPort":8080, "containerPort":8080}
+      ],
+      volumesFrom: [
+        {sourceContainer: "kao-api"}
       ],
       "logConfiguration": {
         "logDriver": "awslogs",
