@@ -5,7 +5,7 @@ var Util = require("cloudformation-z").Util;
 module.exports = {
   "AWSTemplateFormatVersion": "2010-09-09",
 
-  "Description": "cloudformation template sample",
+  "Description": "kao-api infra",
 
   "Parameters": {},
   "Mappings": require("./mappings.js"),
@@ -27,6 +27,7 @@ module.exports = {
       "Properties": {
         "ImageId": { "Fn::FindInMap": ["Region2EcsAMI", { "Ref": "AWS::Region" }, "AMIID"] },
         "InstanceType": config.EcsCluster.instance.type,
+        "AssociatePublicIpAddress": true,
         "SecurityGroups": [{ "Ref": "InstanceSecurityGroup" }],
         "KeyName": config.EcsCluster.instance.keyPair,
         "IamInstanceProfile": { "Ref": "EcsInstanceProfile" },
@@ -103,7 +104,7 @@ module.exports = {
       }
     },
 
-    "ElasticLoadBalancer": {
+    "LB": {
       "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
       "Properties": {
         "CrossZone": "true",
@@ -115,7 +116,7 @@ module.exports = {
           "Protocol": "HTTP"
         }],
         "HealthCheck": {
-          "Target": "HTTP:8080/api/swagger.json",
+          "Target": "HTTP:8080/healthcheck",
           "HealthyThreshold": "3",
           "UnhealthyThreshold": "5",
           "Interval": "30",

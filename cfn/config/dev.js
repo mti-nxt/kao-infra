@@ -7,7 +7,7 @@ module.exports = {
       type: "m3.medium",
       keyPair: "docker-sample"
     },
-    min: "1",
+    min: "0",
     max: "1",
     desired: "1",
   }

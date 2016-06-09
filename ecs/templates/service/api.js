@@ -9,7 +9,7 @@ module.exports = {
   loadBalancers: [
     {
       loadBalancerName: config.app.api.service.loadBalancer,
-      containerName: "kao-api",
+      containerName: "kao-nginx",
       containerPort: 8080
     }
   ],
