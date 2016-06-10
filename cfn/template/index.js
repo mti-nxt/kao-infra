@@ -70,15 +70,18 @@ module.exports = {
         "ManagedPolicyArns": [
           "arn:aws:iam::aws:policy/service-role/AmazonEC2ContainerServiceforEC2Role"
         ],
-        /*
         "Policies": [{
           "PolicyName": "EcsInstanceRole-policy",
           "PolicyDocument": {
-            "Statement": [
-            ]
+            "Statement": [{
+              "Effect": "Allow",
+              "Action": [
+                "s3:*"
+              ],
+              "Resource": `arn:aws:s3:::kao-class-${config.tags.Stage.toLowerCase()}`
+            }]
           }
         }],
-        */
       }
     },
     //各インスタンスのセキュリティグループ
