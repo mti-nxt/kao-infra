@@ -2,7 +2,7 @@ module.exports = {
   clusterName: "KAO-DEV-KaoCluster-6A4YN2PW7ZL4",
   app: {
     api: {
-      revision: 11,
+      revision: 13,
       imageTag: "latest",
       logGroup: "KAO-DEV-KaoApiLog-1R1P4T0ESIQ4E",
       service: {

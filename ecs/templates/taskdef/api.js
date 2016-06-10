@@ -3,7 +3,6 @@ const config = require("config");
 module.exports = {
   "family": `kao-api_${process.env.NODE_ENV}`,
   "revision": config.app.api.revision,
-  "volumes": [],
   "containerDefinitions": [
     {
       "name": "kao-api",
@@ -12,7 +11,12 @@ module.exports = {
       "memory": 1024,
       "portMappings": [
       ],
-      "volumesFrom": [],
+      "mountPoints": [
+        {
+          "sourceVolume": "kao-data",
+          "containerPath": "/opt/tensor-api/data",
+        }
+      ],
       "environment": [
         { "name": "NODE_ENV", "value": process.env.NODE_ENV }
       ],
@@ -30,10 +34,10 @@ module.exports = {
       cpu: 300,
       memory: 512,
       "portMappings": [
-        {"hostPort":8080, "containerPort":8080}
+        { "hostPort": 8080, "containerPort": 8080 }
       ],
       volumesFrom: [
-        {sourceContainer: "kao-api"}
+        { sourceContainer: "kao-api" }
       ],
       "logConfiguration": {
         "logDriver": "awslogs",
@@ -42,6 +46,14 @@ module.exports = {
           "awslogs-group": config.app.api.logGroup
         }
       },
+    }
+  ],
+  "volumes": [
+    {
+      "name": "kao-data",
+      "host": {
+        "sourcePath": "/tmp/kao-data"
+      }
     }
   ],
 }
