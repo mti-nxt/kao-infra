@@ -78,7 +78,10 @@ module.exports = {
               "Action": [
                 "s3:*"
               ],
-              "Resource": `arn:aws:s3:::kao-class-${config.tags.Stage.toLowerCase()}`
+              "Resource": [
+                `arn:aws:s3:::kao-class-${config.tags.Stage.toLowerCase()}`,
+                `arn:aws:s3:::kao-class-${config.tags.Stage.toLowerCase()}/*`
+              ]
             }]
           }
         }],
